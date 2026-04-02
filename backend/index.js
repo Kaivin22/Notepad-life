@@ -58,6 +58,19 @@ function initDB() {
 // ------ FOLDERS API ------
 
 // Get folders (optional query ?parent_id=... to get subfolders)
+// Search folders - MUST be before /folders/:id
+app.get('/folders/search', (req, res) => {
+  const q = req.query.q || '';
+  db.query(
+    "SELECT * FROM folders WHERE name LIKE ?",
+    [`%${q}%`],
+    (err, result) => {
+      if (err) return res.status(500).json({ error: err });
+      res.json(result);
+    }
+  );
+});
+
 app.get('/folders', (req, res) => {
   const parent_id = req.query.parent_id;
   let query = "SELECT * FROM folders WHERE parent_id IS NULL";
@@ -92,7 +105,6 @@ app.put('/folders/:id', (req, res) => {
 
 app.delete('/folders/:id', (req, res) => {
   const id = req.params.id;
-  // User will handle warning on frontend, this just executes cascade delete (assuming foreign key)
   db.query("DELETE FROM folders WHERE id = ?", [id], (err) => {
     if (err) return res.status(500).json({ error: err });
     res.json({ message: "Folder Deleted" });
@@ -100,6 +112,19 @@ app.delete('/folders/:id', (req, res) => {
 });
 
 // ------ NOTES API ------
+
+// Search notes - MUST be before /notes/:id
+app.get('/notes/search', (req, res) => {
+  const q = req.query.q || '';
+  db.query(
+    "SELECT * FROM notes WHERE title LIKE ? OR content LIKE ?",
+    [`%${q}%`, `%${q}%`],
+    (err, result) => {
+      if (err) return res.status(500).json({ error: err });
+      res.json(result);
+    }
+  );
+});
 
 app.get('/notes', (req, res) => {
   const folder_id = req.query.folder_id;
@@ -140,18 +165,6 @@ app.delete('/notes/:id', (req, res) => {
     if (err) return res.status(500).json({ error: err });
     res.json({ message: "Note Deleted" });
   });
-});
-
-app.get('/notes/search', (req, res) => {
-  const q = req.query.q;
-  db.query(
-    "SELECT * FROM notes WHERE title LIKE ? OR content LIKE ?",
-    [`%${q}%`, `%${q}%`],
-    (err, result) => {
-      if (err) return res.status(500).json({ error: err });
-      res.json(result);
-    }
-  );
 });
 
 app.get('/health', (req, res) => {

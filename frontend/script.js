@@ -191,5 +191,38 @@ function downloadNote(title, content) {
   document.body.removeChild(element);
 }
 
+// Search functionality
+let debounceTimer;
+
+function handleSearch() {
+  const query = document.getElementById('search-input').value.trim();
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    if (query.length > 0) {
+      performSearch(query);
+    } else {
+      currentFolderId = null;
+      currentPath = [{ id: null, name: 'Home' }];
+      loadData();
+    }
+  }, 300);
+}
+
+async function performSearch(query) {
+  contentArea.innerHTML = '<i>Đang tìm kiếm...</i>';
+  try {
+    const [resF, resN] = await Promise.all([
+      fetch(`/folders/search?q=${encodeURIComponent(query)}`).then(r => r.json()),
+      fetch(`/notes/search?q=${encodeURIComponent(query)}`).then(r => r.json())
+    ]);
+
+    breadcrumbs.innerHTML = `<span>Kết quả tìm kiếm cho: "${query}"</span>`;
+    renderContent(resF, resN);
+  } catch (error) {
+    console.error(error);
+    contentArea.innerHTML = '<p style="color:red">Lỗi tìm kiếm!</p>';
+  }
+}
+
 // Chạy lần đầu
 loadData();
