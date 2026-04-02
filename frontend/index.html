@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><title>Note App</title></head>
+<body>
+<h1>Note App</h1>
+<input id="search" placeholder="Search..." />
+<button onclick="search()">Search</button>
+<ul id="list"></ul>
+
+<script>
+async function load(){
+  const res = await fetch('/notes');
+  const data = await res.json();
+  render(data);
+}
+function render(data){
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+  data.forEach(n => {
+    list.innerHTML += `<li><b>${n.title}</b>: ${n.content}</li>`;
+  });
+}
+async function search(){
+  const q = document.getElementById('search').value;
+  const res = await fetch('/notes/search?q=' + q);
+  const data = await res.json();
+  render(data);
+}
+load();
+</script>
+</body>
+</html>
