@@ -1,0 +1,38 @@
+* { box-sizing: border-box; font-family: sans-serif; }
+body { margin: 0; padding: 0; background: #f0f2f5; color: #333; }
+.app-container { max-width: 900px; margin: 0 auto; padding: 20px; }
+header { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+header h1 { margin: 0; font-size: 24px; color: #1a73e8; }
+.breadcrumbs { font-weight: bold; color: #555; }
+.breadcrumbs span { cursor: pointer; color: #1a73e8; text-decoration: underline; }
+.breadcrumbs span:hover { color: #0d47a1; }
+.actions button { padding: 8px 15px; background: #1a73e8; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; }
+.actions button:hover { background: #1557b0; }
+
+main { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+
+/* Item Cards */
+.card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; display: flex; flex-direction: column; position: relative; }
+.card:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.15); transform: translateY(-2px); transition: all 0.2s; }
+.card.folder { border-left: 5px solid #fbbc04; }
+.card.note { border-left: 5px solid #34a853; }
+.card h3 { margin: 0 0 10px 0; font-size: 16px; width: 100%; word-wrap: break-word;}
+.card p { margin: 0; font-size: 13px; color: #666; flex: 1; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; }
+.card-icon { font-size: 24px; margin-bottom: 5px; }
+
+.card-actions { margin-top: 10px; display: flex; gap: 5px; }
+.card-actions button { padding: 5px; background: #eee; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; }
+.card-actions button:hover { background: #ddd; }
+.btn-del { color: #d32f2f; }
+
+/* Modals */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+.modal.active { display: flex; }
+.modal-content { background: white; padding: 20px; border-radius: 8px; width: 300px; display: flex; flex-direction: column; gap: 15px; }
+.modal-content.large { width: 500px; }
+.modal-content h2 { margin: 0; }
+.modal-content input, .modal-content textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+.modal-content textarea { height: 150px; resize: vertical; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.modal-actions button { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; }
+.modal-actions button:last-child { background: #1a73e8; color: white; }

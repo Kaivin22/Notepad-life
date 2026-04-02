@@ -1,32 +1,55 @@
 <!DOCTYPE html>
-<html>
-<head><title>Note App</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simplistic Note App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
 <body>
-<h1>Note App</h1>
-<input id="search" placeholder="Search..." />
-<button onclick="search()">Search</button>
-<ul id="list"></ul>
+  <div class="app-container">
+    <header>
+      <h1>Note App</h1>
+      <div id="breadcrumbs" class="breadcrumbs">
+        <span onclick="navigateToRoot()">Home</span>
+      </div>
+      <div class="actions">
+        <button onclick="openFolderModal()">+ Thư mục</button>
+        <button onclick="openNoteModal()">+ Ghi chú</button>
+      </div>
+    </header>
 
-<script>
-async function load(){
-  const res = await fetch('/notes');
-  const data = await res.json();
-  render(data);
-}
-function render(data){
-  const list = document.getElementById('list');
-  list.innerHTML = '';
-  data.forEach(n => {
-    list.innerHTML += `<li><b>${n.title}</b>: ${n.content}</li>`;
-  });
-}
-async function search(){
-  const q = document.getElementById('search').value;
-  const res = await fetch('/notes/search?q=' + q);
-  const data = await res.json();
-  render(data);
-}
-load();
-</script>
+    <main id="content-area">
+      <!-- Dữ liệu render ra đây bằng JS -->
+    </main>
+
+    <!-- Modal Thư Mục -->
+    <div id="folder-modal" class="modal">
+      <div class="modal-content">
+        <h2>Thư mục</h2>
+        <input type="text" id="folder-name" placeholder="Tên thư mục...">
+        <div class="modal-actions">
+          <button onclick="closeModals()">Thoát</button>
+          <button onclick="saveFolder()">Lưu</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Ghi chú -->
+    <div id="note-modal" class="modal">
+      <div class="modal-content large">
+        <h2>Ghi chú</h2>
+        <input type="text" id="note-title" placeholder="Tiêu đề ghi chú...">
+        <textarea id="note-content" placeholder="Nội dung..."></textarea>
+        <div class="modal-actions">
+          <button onclick="closeModals()">Thoát</button>
+          <button onclick="saveNote()">Lưu</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
