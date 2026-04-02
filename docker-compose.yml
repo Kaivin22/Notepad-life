@@ -19,6 +19,8 @@ services:
       - DB_USER=root
       - DB_PASSWORD=admin123
       - DB_NAME=notedb
+      - PORT=5000
+      - APP_NAME=NotepadLife
     depends_on:
       - mysql
 
