@@ -58,6 +58,7 @@ function renderContent(folders, notes) {
 
   // Render Folders
   folders.forEach(f => {
+    const safeName = (f.name || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const div = document.createElement('div');
     div.className = 'card folder';
     div.onclick = () => {
@@ -67,29 +68,51 @@ function renderContent(folders, notes) {
     };
     div.innerHTML = `
       <div class="card-icon">📁</div>
-      <h3>${f.name}</h3>
-      <div class="card-actions" onclick="event.stopPropagation()">
-        <button onclick="openEditFolder(${f.id}, '${f.name}')">Sửa</button>
-        <button class="btn-del" onclick="deleteFolder(${f.id}, '${f.name}')">Xóa</button>
+      <h3>${safeName}</h3>
+      <div class="card-actions">
+        <button class="btn-edit">Sửa</button>
+        <button class="btn-del">Xóa</button>
       </div>
     `;
+    div.querySelector('.btn-edit').onclick = (e) => {
+      e.stopPropagation();
+      openEditFolder(f.id, f.name);
+    };
+    div.querySelector('.btn-del').onclick = (e) => {
+      e.stopPropagation();
+      deleteFolder(f.id, f.name);
+    };
     contentArea.appendChild(div);
   });
 
   // Render Notes
   notes.forEach(n => {
+    const safeTitle = (n.title || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const safeContent = (n.content || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const div = document.createElement('div');
     div.className = 'card note';
     div.innerHTML = `
       <div class="card-icon">📝</div>
-      <h3>${n.title}</h3>
-      <p>${n.content}</p>
+      <h3>${safeTitle}</h3>
+      <p>${safeContent}</p>
       <div class="card-actions">
-        <button onclick="downloadNote('${n.title}', \`${n.content.replace(/`/g, '\\`')}\`)">Tải .txt</button>
-        <button onclick="openEditNote(${n.id}, '${n.title}', \`${n.content.replace(/`/g, '\\`')}\`)">Sửa</button>
-        <button class="btn-del" onclick="deleteNote(${n.id}, '${n.title}')">Xóa</button>
+        <button class="btn-download">Tải .txt</button>
+        <button class="btn-edit">Sửa</button>
+        <button class="btn-del">Xóa</button>
       </div>
     `;
+    div.querySelector('.btn-download').onclick = (e) => {
+      e.stopPropagation();
+      downloadNote(n.title, n.content);
+    };
+    div.querySelector('.btn-edit').onclick = (e) => {
+      e.stopPropagation();
+      openEditNote(n.id, n.title, n.content);
+    };
+    div.querySelector('.btn-del').onclick = (e) => {
+      e.stopPropagation();
+      deleteNote(n.id, n.title);
+    };
     contentArea.appendChild(div);
   });
 }
@@ -221,6 +244,29 @@ async function performSearch(query) {
   } catch (error) {
     console.error(error);
     contentArea.innerHTML = '<p style="color:red">Lỗi tìm kiếm!</p>';
+  }
+}
+
+// Upload file .txt từ máy lên
+async function uploadFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (!file.name.endsWith('.txt')) return alert('Chỉ chấp nhận file .txt!');
+
+  const formData = new FormData();
+  formData.append('file', file);
+  if (currentFolderId) formData.append('folder_id', currentFolderId);
+
+  try {
+    const res = await fetch('/upload', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (!res.ok) return alert('Lỗi: ' + (data.error || 'Không thể tải lên'));
+    alert(`✅ Đã tải lên thành công!\nNote: "${data.title}"`);
+    input.value = ''; // reset input để chọn lại cùng file nếu cần
+    loadData();
+  } catch (err) {
+    console.error(err);
+    alert('Lỗi kết nối khi tải file lên!');
   }
 }
 
