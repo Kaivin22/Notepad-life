@@ -235,7 +235,9 @@ app.post('/upload', upload.single('file'), (req, res) => {
     }
   }
 
-  const title = path.basename(req.file.originalname, '.txt');
+  // Sửa lỗi multer (busboy cũ) parse nhầm filename sang latin1 khiến tiếng Việt bị lỗi chữ
+  const originalNameUtf8 = Buffer.from(req.file.originalname, 'latin1').toString('utf8');
+  const title = path.basename(originalNameUtf8, '.txt');
   const folder_id = req.body.folder_id || null;
 
   db.query(
