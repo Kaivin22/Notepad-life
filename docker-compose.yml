@@ -19,10 +19,16 @@ services:
       - DB_USER=root
       - DB_PASSWORD=admin123
       - DB_NAME=notedb
-    volumes:
-      - ./frontend:/frontend
     depends_on:
       - mysql
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    restart: always
+    depends_on:
+      - backend
 
 volumes:
   db_data:
