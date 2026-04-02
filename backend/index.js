@@ -8,7 +8,6 @@ const jschardet = require('jschardet');
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.static(path.join(__dirname, '../frontend')));
 
 // Multer config: dùng memory storage, chỉ chấp nhận file .txt
 const upload = multer({

@@ -1,4 +1,6 @@
-const API_BASE = '/api'; // Backend sẽ proxy "/api" hoặc chạy cùng URL
+const API_BASE = 'http://localhost:5000';
+
+const apiFetch = (path, options) => fetch(API_BASE + path, options);
 
 let currentFolderId = null;
 let currentPath = [{ id: null, name: 'Home' }];
@@ -19,8 +21,8 @@ async function loadData() {
     
     // Yêu cầu lấy dữ liệu bằng Fetch API
     const [resF, resN] = await Promise.all([
-      fetch(fUrl).then(r => r.json()),
-      fetch(nUrl).then(r => r.json())
+      apiFetch(fUrl).then(r => r.json()),
+      apiFetch(nUrl).then(r => r.json())
     ]);
 
     renderBreadcrumbs();
@@ -155,12 +157,12 @@ async function saveFolder() {
   if (!name) return alert('Nhập tên thư mục!');
   
   if (editItem && editItem.type === 'folder') {
-    await fetch(`/folders/${editItem.id}`, {
+    await apiFetch(`/folders/${editItem.id}`, {
       method: 'PUT', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ name: name })
     });
   } else {
-    await fetch(`/folders`, {
+    await apiFetch(`/folders`, {
       method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ name: name, parent_id: currentFolderId })
     });
@@ -175,12 +177,12 @@ async function saveNote() {
   if (!title) return alert('Nhập tiêu đề!');
   
   if (editItem && editItem.type === 'note') {
-    await fetch(`/notes/${editItem.id}`, {
+    await apiFetch(`/notes/${editItem.id}`, {
       method: 'PUT', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ title, content, folder_id: currentFolderId })
     });
   } else {
-    await fetch(`/notes`, {
+    await apiFetch(`/notes`, {
       method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ title, content, folder_id: currentFolderId })
     });
@@ -192,13 +194,13 @@ async function saveNote() {
 // Delete functions
 async function deleteFolder(id, name) {
   if (confirm(`Bạn có chắc muốn xóa thư mục "${name}" cùng toàn bộ dữ liệu bên trong?`)) {
-    await fetch(`/folders/${id}`, { method: 'DELETE' });
+    await apiFetch(`/folders/${id}`, { method: 'DELETE' });
     loadData();
   }
 }
 async function deleteNote(id, title) {
   if (confirm(`Bạn có chắc muốn xóa ghi chú "${title}"?`)) {
-    await fetch(`/notes/${id}`, { method: 'DELETE' });
+    await apiFetch(`/notes/${id}`, { method: 'DELETE' });
     loadData();
   }
 }
@@ -235,8 +237,8 @@ async function performSearch(query) {
   contentArea.innerHTML = '<i>Đang tìm kiếm...</i>';
   try {
     const [resF, resN] = await Promise.all([
-      fetch(`/folders/search?q=${encodeURIComponent(query)}`).then(r => r.json()),
-      fetch(`/notes/search?q=${encodeURIComponent(query)}`).then(r => r.json())
+      apiFetch(`/folders/search?q=${encodeURIComponent(query)}`).then(r => r.json()),
+      apiFetch(`/notes/search?q=${encodeURIComponent(query)}`).then(r => r.json())
     ]);
 
     breadcrumbs.innerHTML = `<span>Kết quả tìm kiếm cho: "${query}"</span>`;
@@ -258,7 +260,7 @@ async function uploadFile(input) {
   if (currentFolderId) formData.append('folder_id', currentFolderId);
 
   try {
-    const res = await fetch('/upload', { method: 'POST', body: formData });
+    const res = await apiFetch('/upload', { method: 'POST', body: formData });
     const data = await res.json();
     if (!res.ok) return alert('Lỗi: ' + (data.error || 'Không thể tải lên'));
     alert(`✅ Đã tải lên thành công!\nNote: "${data.title}"`);
