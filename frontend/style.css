@@ -1,5 +1,5 @@
 * { box-sizing: border-box; font-family: sans-serif; }
-body { margin: 0; padding: 0; background: #f0f2f5; color: #333; }
+body { margin: 0; padding: 0; min-height: 100vh; background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%); color: #333; }
 .app-container { max-width: 900px; margin: 0 auto; padding: 20px; }
 header { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 header h1 { margin: 0; font-size: 24px; color: #1a73e8; }
